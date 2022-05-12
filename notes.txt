@@ -1,0 +1,17 @@
+total attendees: 509
+Ideal discussion group size: 15-20
+MUST be in discussion group they signed up for.
+3 discussion groups, one for each day, Tuesday, Wednesday, Thursday
+Equal number of male and female, evenly distribute among 4 age groups/grades
+12 discussion group topics
+Concurrent slots: 33.93 - 25.45 total concurrent slots per day
+
+
+Deadline: about a week, 17th
+
+T/H - v/V - dup name
+
+
+Outputs:
+- group lists per day, per topic, per leader
+- wristbands with day + topic
