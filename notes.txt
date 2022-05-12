@@ -15,3 +15,6 @@ T/H - v/V - dup name
 Outputs:
 - group lists per day, per topic, per leader
 - wristbands with day + topic
+
+Row 376 - Choose most popular talk
+Row 183 - Choose 3rd most popular talk
