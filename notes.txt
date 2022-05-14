@@ -18,10 +18,3 @@ Outputs:
 
 Row 376 - Choose most popular talk
 Row 183 - Choose 3rd most popular talk
-
-
-Algorithm Steps:
-- Starting with most restrictive (most unpopular) topic
-    - make a set of group for the topic, adding them to evenly space out slots
-    - assign students to groups, tracking day scheduled
-    

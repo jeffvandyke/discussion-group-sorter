@@ -9,6 +9,13 @@ import { Student } from "./student";
 import { Topic, Time } from "./types";
 // import FastPriorityQueue from "fastpriorityqueue";
 import { Group } from "./group";
+import crypto from "crypto";
+
+function hashSha256(nameString: string) {
+    const hasher = crypto.createHash("sha256");
+    const hash = hasher.update(nameString).digest("hex");
+    return hash;
+}
 
 class GroupAssignmentsTracker {
     constructor(groups: Group[]) {
@@ -21,9 +28,9 @@ class GroupAssignmentsTracker {
     // Maintain sorted with fewest assignees first
     private groupAssignments: GroupAssignment[];
 
-    private sortCounts() {
-        this.groupAssignments.sort((a, b) => a.numAssigned - b.numAssigned);
-    }
+    // private sortCounts() {
+    //     this.groupAssignments.sort((a, b) => a.numAssigned - b.numAssigned);
+    // }
 
     getGroupAssignments() {
         return this.originalOrder.map((id) =>
@@ -34,12 +41,23 @@ class GroupAssignmentsTracker {
     /** Assigns group within the times allowed to assign to */
     addStudentToGroup(student: Student, candidates: Time[]) {
         // Use first match - list is sorted
-        const foundAssignment = this.groupAssignments.find((g) =>
+        const eligibleAssignments = this.groupAssignments.filter((g) =>
             candidates.includes(g.group.time)
         );
-        foundAssignment.addStudent(student);
-        this.sortCounts();
-        return foundAssignment.group;
+
+        // Try to pick a group that prioritizes even
+        // distribution as well as populating groups,
+        // some improvements could still be made
+        const groupAssignment = _.sortBy(
+            eligibleAssignments,
+            (asmt) =>
+                100 * asmt.numAssigned +
+                80 * asmt.getGradeCount(student.grade) +
+                80 * asmt.getGenderCount(student.gender)
+        )[0];
+        groupAssignment.addStudent(student);
+        // this.sortCounts();
+        return groupAssignment.group;
     }
 }
 
@@ -78,7 +96,11 @@ export function assignStudentsToGroups(
 
     const groups = makeTopicGroups(topicsByPopularity, times);
 
-    const randomizedStudents = _.sortBy(students, Math.random);
+    // Sort by a random but deterministic order
+    const randomizedStudents = _.sortBy(students, (s) =>
+        hashSha256(s.firstName + s.lastName)
+    );
+
     const studentAssignments = makeEmptyStudentAssignments(
         randomizedStudents,
         times

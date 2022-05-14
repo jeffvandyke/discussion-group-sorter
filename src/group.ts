@@ -11,12 +11,13 @@ export type Group = {
 };
 
 // Grows when a new time is asked
-const letterIdsPerTime = {};
+const letterIdsPerTime: { [key: Time]: number } = {};
 
 const letters = Array.from(Array(26)).map((_, i) =>
     String.fromCharCode("A".charCodeAt(0) + i)
-);
+).filter(a => a !== 'F' /* Avoid unfortunate words */);
 
+/** Generate enough letters to be safely indexed */
 const groupIds = letters.concat(letters.map(l => l + l));
 
 function makeGroupNamePerTime(time: string): GroupName {

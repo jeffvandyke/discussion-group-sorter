@@ -1,6 +1,6 @@
 import _ from "lodash";
 import { Group } from "./group";
-import { Student } from "./student";
+import { Gender, Grade, Student } from "./student";
 import { Time } from "./types";
 
 type GroupAssignments = {
@@ -39,7 +39,9 @@ export class StudentAssignment {
     assignGroup(group: Group) {
         const { time } = group;
         if (this.assignments[time] != null) {
-            throw new Error('The group time is already assigned to this student');
+            throw new Error(
+                "The group time is already assigned to this student"
+            );
         }
         this.assignments[time] = group;
     }
@@ -60,8 +62,20 @@ export class GroupAssignment {
     private readonly _students: Student[] = [];
 
     readonly group: Group;
-    get students() { return this._students; }
-    get numAssigned() { return this._students.length; }
+    get students() {
+        return this._students;
+    }
+    get numAssigned() {
+        return this._students.length;
+    }
+
+    getGenderCount(gender: Gender) {
+        return this._students.filter((s) => s.gender === gender).length;
+    }
+
+    getGradeCount(grade: Grade) {
+        return this._students.filter((s) => s.grade === grade).length;
+    }
 
     addStudent(student: Student) {
         this._students.push(student);
