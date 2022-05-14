@@ -1,6 +1,6 @@
 import _ from "lodash";
 import { assignStudentsToGroups } from "./src/algorithm";
-import { readFromCsv } from "./src/import";
+import { readFromFile } from "./src/import";
 import { displayStudent, Gender, Grade } from "./src/student";
 import { Time } from "./src/types";
 import { StudentAssignment } from "./src/assignments";
@@ -25,10 +25,10 @@ function checkStudentAssignmentTopics(asmts: StudentAssignment[]) {
 }
 
 (async () => {
-    const csvFilename = process.argv[2];
-    if (!csvFilename)
-        throw new Error("Usage: node ./main.js csv-file-name.csv");
-    const { students, topics } = await readFromCsv(csvFilename);
+    const spreadsheetFilename = process.argv[2];
+    if (!spreadsheetFilename)
+        throw new Error("Usage: node ./main.js input-file-name.[xlsx|csv]");
+    const { students, topics } = await readFromFile(spreadsheetFilename);
 
     const { studentAssignments, groupAssignments } = assignStudentsToGroups(
         students,

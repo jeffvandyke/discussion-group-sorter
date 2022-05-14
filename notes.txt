@@ -18,3 +18,5 @@ Outputs:
 
 Row 376 - Choose most popular talk
 Row 183 - Choose 3rd most popular talk
+
+Need a map with letters on it.
