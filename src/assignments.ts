@@ -35,11 +35,35 @@ export class StudentAssignment {
             (t) => !Object.values(this.assignments).some((o) => o?.topic === t)
         );
     }
+
+    assignGroup(group: Group) {
+        const { time } = group;
+        if (this.assignments[time] != null) {
+            throw new Error('The group time is already assigned to this student');
+        }
+        this.assignments[time] = group;
+    }
 }
 
-export function makeEmptyAssignments(
+export function makeEmptyStudentAssignments(
     students: Student[],
     times: Time[]
 ): StudentAssignment[] {
     return students.map((student) => new StudentAssignment(student, times));
+}
+
+export class GroupAssignment {
+    constructor(group: Group) {
+        this.group = group;
+    }
+
+    private readonly _students: Student[] = [];
+
+    readonly group: Group;
+    get students() { return this._students; }
+    get numAssigned() { return this._students.length; }
+
+    addStudent(student: Student) {
+        this._students.push(student);
+    }
 }

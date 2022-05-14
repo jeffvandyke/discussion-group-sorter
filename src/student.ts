@@ -3,29 +3,33 @@ import { Topic } from "./types";
 export type StudentId = number & { _type: "StudentId" };
 
 export enum Gender {
-    Male = "Male",
-    Female = "Female",
+    Male = "M",
+    Female = "F",
 }
 
 // TODO: make flexible
 export enum Grade {
-    Ten = "10",
-    Eleven = "11",
-    Twelve = "12",
-    PostHigh = "Post High School",
+    Ten = "10th",
+    Eleven = "11th",
+    Twelve = "12th",
+    PostHigh = "Post High",
 }
 
 export type Student = {
     readonly id: StudentId;
     readonly lastName: string;
     readonly firstName: string;
-    /** Marker to avoid dups */
+    /** Marker to avoid dups, unused... */
     readonly suffix?: string;
     readonly gender: Gender;
     readonly grade: Grade;
     /** 3 for this problem */
     readonly chosenTopics: ReadonlyArray<Topic>;
 };
+
+export function displayStudent(s: Student) {
+    return `${s.firstName} ${s.lastName} (${s.gender}, ${s.grade})`;
+}
 
 const makeId = (() => {
     let nextId = 1;
