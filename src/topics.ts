@@ -1,5 +1,4 @@
-import { groupBy } from "lodash";
-import { makeGroup } from "./group";
+import { Group, makeGroup } from "./group";
 import { Time } from "./types";
 
 function groupCountFromTotal(n: number): number {
@@ -11,7 +10,7 @@ export type TopicsByCount = {
     count: number;
 }[];
 
-export function makeTopicsTable(topicsByCount: TopicsByCount, times: Time[]) {
+export function makeTopicGroups(topicsByCount: TopicsByCount, times: Time[]): Group[] {
     const topicGroups = [];
     let timeIndex = 0;
 
@@ -24,6 +23,5 @@ export function makeTopicsTable(topicsByCount: TopicsByCount, times: Time[]) {
         }
     }
 
-    const table = groupBy(topicGroups, "time");
-    return table;
+    return topicGroups;
 }

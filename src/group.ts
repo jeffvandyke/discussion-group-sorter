@@ -1,13 +1,13 @@
 import { Topic, Time } from "./types";
 
 type GroupId = string;
-type Slot = string;
+type GroupName = string;
 
 export type Group = {
-    id: GroupId;
-    slot: Slot;
-    topic: Topic;
-    time: Time;
+    readonly id: GroupId;
+    readonly groupName: GroupName;
+    readonly topic: Topic;
+    readonly time: Time;
 };
 
 // Grows when a new time is asked
@@ -19,7 +19,7 @@ const letters = Array.from(Array(26)).map((_, i) =>
 
 const groupIds = letters.concat(letters.map(l => l + l));
 
-function makeSlotPerTime(time: string): Slot {
+function makeGroupNamePerTime(time: string): GroupName {
     if (!(time in letterIdsPerTime)) {
         letterIdsPerTime[time] = 0;
     }
@@ -29,10 +29,10 @@ function makeSlotPerTime(time: string): Slot {
 }
 
 export function makeGroup(topic: string, time: Time): Group {
-    const slot = makeSlotPerTime(time);
+    const groupName = makeGroupNamePerTime(time);
     return {
-        id: `${time}-${slot}`,
-        slot,
+        id: `${time}-${groupName}`,
+        groupName,
         topic,
         time,
     };

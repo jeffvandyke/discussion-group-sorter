@@ -2,11 +2,6 @@ import { Topic } from "./types";
 
 export type StudentId = number & { _type: "StudentId" };
 
-const makeId = (() => {
-    let nextId = 1;
-    return () => nextId++ as StudentId;
-})();
-
 export enum Gender {
     Male = "Male",
     Female = "Female",
@@ -21,16 +16,21 @@ export enum Grade {
 }
 
 export type Student = {
-    id: StudentId;
-    lastName: string;
-    firstName: string;
+    readonly id: StudentId;
+    readonly lastName: string;
+    readonly firstName: string;
     /** Marker to avoid dups */
-    suffix?: string;
-    gender: Gender;
-    grade: Grade;
+    readonly suffix?: string;
+    readonly gender: Gender;
+    readonly grade: Grade;
     /** 3 for this problem */
-    chosenTopics: Topic[];
+    readonly chosenTopics: ReadonlyArray<Topic>;
 };
+
+const makeId = (() => {
+    let nextId = 1;
+    return () => nextId++ as StudentId;
+})();
 
 type StudentInput = Omit<Student, "id" | "gender" | "grade"> & {
     gender: string;
