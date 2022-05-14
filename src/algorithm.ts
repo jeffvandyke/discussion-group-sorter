@@ -87,7 +87,7 @@ export function assignStudentsToGroups(
     const groupAssignments = [];
 
     // Start with most restrictive (fewest groups)
-    topicsByPopularity.slice(0, 1 /* WIP */).forEach(({ topic }) => {
+    topicsByPopularity.forEach(({ topic }) => {
         const topicGroups = groups.filter((g) => g.topic === topic);
         const studentsToAssign = studentAssignments.filter((a) =>
             a.getUnassignedTopics().includes(topic)
