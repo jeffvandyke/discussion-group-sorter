@@ -81,3 +81,25 @@ export class GroupAssignment {
         this._students.push(student);
     }
 }
+
+/** Asserts that all the groups a student is
+ * assigned to match with their chosen topics */ 
+export function checkStudentAssignmentTopics(asmts: StudentAssignment[]) {
+    asmts.forEach((asmt) => {
+        if (
+            !_.isEqual(
+                _.sortBy(asmt.student.chosenTopics),
+                _.sortBy(Object.values(asmt.assignments).map((v) => v.topic))
+            )
+        ) {
+            throw new Error(
+                `Topics assigned do not match chosen: ${JSON.stringify(asmt)}`
+            );
+        }
+    });
+}
+
+export type Assignments = {
+    studentAssignments: StudentAssignment[];
+    groupAssignments: GroupAssignment[];
+};

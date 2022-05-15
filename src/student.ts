@@ -31,6 +31,14 @@ export function displayStudent(s: Student) {
     return `${s.firstName} ${s.lastName} (${s.gender}, ${s.grade})`;
 }
 
+export function displayStudentTraits(s: Student) {
+    return `${s.gender}, ${s.grade}`;
+}
+
+export function displayStudentLastFirst(s: Student) {
+    return `${s.lastName}, ${s.firstName}`;
+}
+
 const makeId = (() => {
     let nextId = 1;
     return () => nextId++ as StudentId;

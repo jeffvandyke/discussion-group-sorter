@@ -1,9 +1,9 @@
 import _ from "lodash";
 import { makeTopicGroups } from "./topics";
 import {
+    Assignments,
     GroupAssignment,
     makeEmptyStudentAssignments,
-    StudentAssignment,
 } from "./assignments";
 import { Student } from "./student";
 import { Topic, Time } from "./types";
@@ -75,16 +75,11 @@ class GroupAssignmentsTracker {
 //     return pq;
 // }
 
-type Results = {
-    studentAssignments: StudentAssignment[];
-    groupAssignments: GroupAssignment[];
-};
-
 export function assignStudentsToGroups(
     students: Student[],
     allTopics: Topic[],
     times: Time[]
-): Results {
+): Assignments {
     const topicsByPopularity = allTopics
         .map((t) => ({
             topic: t,
@@ -106,7 +101,7 @@ export function assignStudentsToGroups(
         times
     );
 
-    const groupAssignments = [];
+    const groupAssignments: GroupAssignment[] = [];
 
     // Start with most restrictive (fewest groups)
     topicsByPopularity.forEach(({ topic }) => {
