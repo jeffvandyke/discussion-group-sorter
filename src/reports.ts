@@ -8,6 +8,7 @@ import {
     displayStudentTraits,
     Gender,
     Grade,
+    Student,
 } from "./student";
 
 type Params = {
@@ -72,6 +73,18 @@ export function studentWristbands(
     ];
 }
 
+function breakdownStudentStats(students: Student[], grades: Grade[]) {
+    return {
+        total: students.length,
+        genderTotals: [Gender.Male, Gender.Female].map(
+            (gender) => students.filter((s) => s.gender === gender).length
+        ),
+        gradeTotals: grades.map(
+            (grade) => students.filter((s) => s.grade === grade).length
+        ),
+    };
+}
+
 export function groupBreakdowns(
     { groupAssignments }: Assignments,
     { times, grades }: Params
@@ -85,30 +98,8 @@ export function groupBreakdowns(
                     .map((g) => ({
                         name: g.group.groupName,
                         topic: g.group.topic,
-                        size: g.students.length,
                         // studentOverview: g.students.map(s => `${s.gender}-${s.grade}`).join(' '),
-                        genderTotals: Object.fromEntries(
-                            [Gender.Male, Gender.Female].map((gender) => [
-                                gender,
-                                g.students.filter((s) => s.gender === gender)
-                                    .length,
-                            ])
-                        ),
-                        // gradeCounts: grades
-                        //     .map(
-                        //         (grade) =>
-                        //             `${grade}: ${
-                        //                 g.students.filter((s) => s.grade === grade).length
-                        //             }`
-                        //     )
-                        //     .join(", "),
-                        gradeCounts: grades.map(
-                            (grade) =>
-                                `${grade}: ${
-                                    g.students.filter((s) => s.grade === grade)
-                                        .length
-                                }`
-                        ),
+                        studentStats: breakdownStudentStats(g.students, grades),
                         students: g.students.map((s) => ({
                             name: displayStudentLastFirst(s),
                             traits: displayStudentTraits(s),
@@ -124,6 +115,8 @@ export function programSheets(
     params: Params
 ): { time: Time; cells: string[][] }[] {
     const breakdowns = groupBreakdowns(assignments, params);
+    const { grades } = params;
+
     return breakdowns.map(([time, groups]) => ({
         time,
         cells: [
@@ -133,12 +126,12 @@ export function programSheets(
                 .map((g) => [
                     [`${g.name} - ${g.topic}`],
                     [
-                        `Size: ${g.size}`,
+                        `Size: ${g.studentStats.total}`,
                         // `M:F - ${g.maleToFemale}`,
-                        `${g.genderTotals[Gender.Male]} M, ${
-                            g.genderTotals[Gender.Female]
-                        } F`,
-                        ...g.gradeCounts,
+                        `${g.studentStats.genderTotals[0]} M, ${g.studentStats.genderTotals[1]} F`,
+                        ...grades.map(
+                            (gd, i) => `${gd}: ${g.studentStats.gradeTotals[i]}`
+                        ),
                     ],
                     ...g.students.map((s) => [s.name, "", "", s.traits]),
                     [],
@@ -162,23 +155,16 @@ export function topicBreakdown(
             );
             return {
                 topic,
-                studentsCount: studentsChoosingTopic.length,
                 numberOfGroups: groupAssignments
                     .map((ga) => ga.group)
                     .filter((g) => g.topic === topic).length,
-                genderTotals: [Gender.Male, Gender.Female].map(
-                    (gender) =>
-                        studentsChoosingTopic.filter((s) => s.gender === gender)
-                            .length
-                ),
-                gradeCounts: grades.map(
-                    (grade) =>
-                        studentsChoosingTopic.filter((s) => s.grade === grade)
-                            .length
+                studentStats: breakdownStudentStats(
+                    studentsChoosingTopic,
+                    grades
                 ),
             };
         }),
-        "studentsCount",
+        "studentStats.total",
         "desc"
     );
 
@@ -186,10 +172,23 @@ export function topicBreakdown(
         ["Topic", "Students", "Groups", "Males", "Females", ...grades],
         ...breakdown.map((t) => [
             t.topic,
-            t.studentsCount,
+            t.studentStats.total,
             t.numberOfGroups,
-            ...t.genderTotals,
-            ...t.gradeCounts,
+            ...t.studentStats.genderTotals,
+            ...t.studentStats.gradeTotals,
         ]),
     ];
+}
+
+export function groupIndex(
+    { studentAssignments, groupAssignments }: Assignments,
+    { times, grades }: Params
+): (string | number)[][] {
+    const sectionHeader = ["Name", "Topic"];
+    const timeSections = times.map((time) => ({
+        time,
+        groups: groupAssignments
+            .filter((ga) => ga.group.time === time)
+            .map((ga) => [ga.group.groupName, ga.group.topic]),
+    }));
 }

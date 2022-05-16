@@ -33,6 +33,7 @@ const parameters = {
     console.log("Overview: ", reports.overview(assignments));
 
     output.writeXlsx("Discussion Groups Sorted.xlsx", [
+        // ["Group Index", reports.groupIndex(...reportParams)],
         ...reports
             .programSheets(...reportParams)
             .map<[string, string[][]]>((v) => [`${v.time} Groups`, v.cells]),

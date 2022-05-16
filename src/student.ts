@@ -12,7 +12,7 @@ export enum Grade {
     Ten = "10th",
     Eleven = "11th",
     Twelve = "12th",
-    PostHigh = "Post High",
+    PostHigh = "Post",
 }
 
 export type Student = {
