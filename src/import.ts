@@ -1,4 +1,4 @@
-import fs from "fs/promises";
+import * as fs from "fs/promises";
 import { parse } from "csv-parse/sync";
 import * as Xlsx from "xlsx";
 import { makeStudent, Student } from "./student";

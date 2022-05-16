@@ -1,4 +1,4 @@
-import _ from "lodash";
+import * as _ from "lodash";
 import { makeTopicGroups } from "./topics";
 import {
     Assignments,
@@ -9,7 +9,7 @@ import { Student } from "./student";
 import { Topic, Time } from "./types";
 // import FastPriorityQueue from "fastpriorityqueue";
 import { Group } from "./group";
-import crypto from "crypto";
+import * as crypto from "crypto";
 
 function hashSha256(nameString: string) {
     const hasher = crypto.createHash("sha256");

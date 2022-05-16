@@ -1,4 +1,4 @@
-import _ from "lodash";
+import * as _ from "lodash";
 import { assignStudentsToGroups } from "./src/algorithm";
 import { readFromFile } from "./src/import";
 import { Grade } from "./src/student";
@@ -15,6 +15,8 @@ const parameters = {
     times,
     grades,
 };
+
+if (!global.performance) { global.performance = Date as any }
 
 (async () => {
     const spreadsheetFilename = process.argv[2];
