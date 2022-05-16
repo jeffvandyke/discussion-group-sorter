@@ -1,14 +1,15 @@
 import * as Xlsx from "xlsx";
 
-const aoa_to_sheet = Xlsx.utils.aoa_to_sheet;
+export type SheetTuples = [name: string, cells: (string | number)[][]][];
 
-export function writeXlsx(
-    filename: string,
-    sheets: [name: string, cells: (string | number)[][]][]
-) {
+export function writeXlsx(filename: string, sheets: SheetTuples) {
     const book = Xlsx.utils.book_new();
     sheets.forEach(([name, cells]) => {
-        Xlsx.utils.book_append_sheet(book, aoa_to_sheet(cells), name);
+        Xlsx.utils.book_append_sheet(
+            book,
+            Xlsx.utils.aoa_to_sheet(cells),
+            name
+        );
     });
     Xlsx.writeFile(book, filename);
 }

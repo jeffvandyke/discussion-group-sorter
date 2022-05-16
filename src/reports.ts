@@ -3,7 +3,6 @@ import _ from "lodash";
 import { Assignments } from "./assignments";
 import { Time } from "./types";
 import {
-    displayStudent,
     displayStudentLastFirst,
     displayStudentTraits,
     Gender,
@@ -16,31 +15,47 @@ type Params = {
     grades: Grade[];
 };
 
-export function overview({
-    studentAssignments,
-    groupAssignments,
-}: Assignments) {
+function breakdownStudentStats(students: Student[], grades: Grade[]) {
+    return {
+        total: students.length,
+        genderTotals: [Gender.Male, Gender.Female].map(
+            (gender) => students.filter((s) => s.gender === gender).length
+        ),
+        gradeTotals: grades.map(
+            (grade) => students.filter((s) => s.grade === grade).length
+        ),
+    };
+}
+
+export function overview(
+    { studentAssignments, groupAssignments }: Assignments,
+    { times, grades }: Params
+) {
     const students = studentAssignments.map((a) => a.student);
     const groups = groupAssignments.map((g) => g.group);
     const topics = [...new Set(groups.map((g) => g.topic))];
 
-    const countTotals = (groups: Record<string, any[]>) =>
-        Object.entries(groups).reduce<Record<string, number>>(
-            (prev, [k, v]) => ({
-                ...prev,
-                [k]: v.length,
-            }),
-            {}
-        );
+    const studentStats = breakdownStudentStats(students, grades);
 
     return {
         students: {
-            totalStudents: students.length,
-            gradeTotals: countTotals(_.groupBy(students, "grade")),
-            genderTotals: countTotals(_.groupBy(students, "gender")),
+            total: studentStats.total,
+            genderTotals: {
+                Males: studentStats.genderTotals[0],
+                Females: studentStats.genderTotals[1],
+            },
+            gradeTotals: Object.fromEntries(
+                grades.map((grade, i) => [grade, studentStats.gradeTotals[i]])
+            ),
         },
         groupTotals: {
             totalGroups: groups.length,
+            timeTotals: Object.fromEntries(
+                times.map((t) => [
+                    t,
+                    groupAssignments.filter((g) => g.group.time === t).length,
+                ])
+            ),
             totalTopics: topics.length,
         },
     };
@@ -71,18 +86,6 @@ export function studentWristbands(
         ["Last Name", "First Name", "Wristband Schedule"],
         ...data.map((v) => [v.lastName, v.firstName, v.schedule]),
     ];
-}
-
-function breakdownStudentStats(students: Student[], grades: Grade[]) {
-    return {
-        total: students.length,
-        genderTotals: [Gender.Male, Gender.Female].map(
-            (gender) => students.filter((s) => s.gender === gender).length
-        ),
-        gradeTotals: grades.map(
-            (grade) => students.filter((s) => s.grade === grade).length
-        ),
-    };
 }
 
 export function groupBreakdowns(
@@ -124,10 +127,9 @@ export function programSheets(
             [],
             ...groups
                 .map((g) => [
-                    [`${g.name} - ${g.topic}`],
+                    [g.name, g.topic],
                     [
                         `Size: ${g.studentStats.total}`,
-                        // `M:F - ${g.maleToFemale}`,
                         `${g.studentStats.genderTotals[0]} M, ${g.studentStats.genderTotals[1]} F`,
                         ...grades.map(
                             (gd, i) => `${gd}: ${g.studentStats.gradeTotals[i]}`
@@ -180,15 +182,83 @@ export function topicBreakdown(
     ];
 }
 
+const SEPARATE_GROUPS_BY_TIME = false;
+
 export function groupIndex(
-    { studentAssignments, groupAssignments }: Assignments,
-    { times, grades }: Params
+    assignments: Assignments,
+    params: Params
 ): (string | number)[][] {
-    const sectionHeader = ["Name", "Topic"];
+    const { groupAssignments } = assignments;
+    const { times, grades } = params;
+
+    const ovData = overview(assignments, params);
+
+    const overviewTable = [
+        ["Students", ovData.students.total],
+        [
+            "Males",
+            ovData.students.genderTotals.Males,
+            "Females",
+            ovData.students.genderTotals.Females,
+        ],
+        Object.entries(ovData.students.gradeTotals).flat(),
+        [],
+        ["Groups", ovData.groupTotals.totalGroups],
+        Object.entries(ovData.groupTotals.timeTotals).flat(),
+        [],
+        ["Topics", ovData.groupTotals.totalTopics],
+    ];
+
+    // Groups
+
+    const groupsHeader = [
+        "Name",
+        "Topic",
+        "Students",
+        "Males",
+        "Females",
+        ...grades,
+    ];
     const timeSections = times.map((time) => ({
         time,
         groups: groupAssignments
             .filter((ga) => ga.group.time === time)
-            .map((ga) => [ga.group.groupName, ga.group.topic]),
+            .map((ga) => {
+                const stats = breakdownStudentStats(ga.students, grades);
+                return [
+                    ga.group.groupName,
+                    ga.group.topic,
+                    stats.total,
+                    ...stats.genderTotals, // X 2
+                    ...stats.gradeTotals, // X 4
+                ];
+            }),
     }));
+
+    return [
+        ...overviewTable,
+        [],
+        [],
+        ...(SEPARATE_GROUPS_BY_TIME
+            ? timeSections
+                  .map((ts) => [
+                      [`Groups for ${ts.time}`],
+                      [],
+                      groupsHeader,
+                      ...ts.groups,
+                      [],
+                      [],
+                  ])
+                  .flat()
+            : [
+                  ["Groups in topic order"],
+                  [],
+                  [groupsHeader[0], "Time", ...groupsHeader.slice(1)],
+                  ..._.zip(
+                      ...timeSections.map(({ time, groups }) =>
+                          groups.map((g) => [g[0], time, ...g.slice(1)])
+                      )
+                  ).flat(),
+              ]),
+    ];
 }
