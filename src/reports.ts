@@ -70,17 +70,26 @@ export function allLetters(
         .join("\n");
 }
 
+function sortStudents<T extends { lastName: string; firstName: string }>(
+    students: T[]
+): T[] {
+    return _.orderBy(students, [
+        (s) => s.lastName.toLowerCase().replace(" ", ""),
+        "lastName",
+        "firstName",
+    ]);
+}
+
 export function studentWristbands(
     { studentAssignments }: Assignments,
     { times }: Params
 ): string[][] {
-    const data = _.orderBy(
+    const data = sortStudents(
         studentAssignments.map((sa) => ({
             lastName: sa.student.lastName,
             firstName: sa.student.firstName,
             schedule: times.map((t) => sa.assignments[t].groupName).join(", "),
-        })),
-        ["lastName", "firstName"]
+        }))
     );
     return [
         ["Last Name", "First Name", "Wristband Schedule"],
@@ -103,7 +112,7 @@ export function groupBreakdowns(
                         topic: g.group.topic,
                         // studentOverview: g.students.map(s => `${s.gender}-${s.grade}`).join(' '),
                         studentStats: breakdownStudentStats(g.students, grades),
-                        students: g.students.map((s) => ({
+                        students: sortStudents(g.students).map((s) => ({
                             name: displayStudentLastFirst(s),
                             traits: displayStudentTraits(s),
                         })),
@@ -237,25 +246,25 @@ export function groupIndex(
         ...overviewTable,
         [],
         [],
-            ["Group Schedule"],
-            [],
-            ..._.zip(...timeSections
-                .map((ts) => [
-                    [`Groups for ${ts.time}`, '', '', ''],
-                    // ['', '', '', ''],
-                    ["Name", "Topic", "Size", ''],
-                    ...ts.groups.map(g => [...g.slice(0, 3), '']),
-                ]))
-                .map(rowColSet => rowColSet.flat()),
-            [],
-            [],
-            ["Groups in topic order"],
-            [],
-            [groupsHeader[0], "Time", ...groupsHeader.slice(1)],
-            ..._.zip(
-                ...timeSections.map(({ time, groups }) =>
-                                    groups.map((g) => [g[0], time, ...g.slice(1)])
-                                   )
-            ).flat(),
+        ["Group Schedule"],
+        [],
+        ..._.zip(
+            ...timeSections.map((ts) => [
+                [`Groups for ${ts.time}`, "", "", ""],
+                // ['', '', '', ''],
+                ["Name", "Topic", "Size", ""],
+                ...ts.groups.map((g) => [...g.slice(0, 3), ""]),
+            ])
+        ).map((rowColSet) => rowColSet.flat()),
+        [],
+        [],
+        ["Groups in topic order"],
+        [],
+        [groupsHeader[0], "Time", ...groupsHeader.slice(1)],
+        ..._.zip(
+            ...timeSections.map(({ time, groups }) =>
+                groups.map((g) => [g[0], time, ...g.slice(1)])
+            )
+        ).flat(),
     ];
 }
