@@ -18,25 +18,32 @@ const parameters = {
 
 if (!global.performance) { global.performance = Date as any }
 
+let tStart = performance.now();
+const getMsTime = () => (-tStart + (tStart = performance.now())).toFixed(3)
+
+const begin = (txt: string) => process.stdout.write(txt);
+const done = () => process.stdout.write(` DONE (${getMsTime()} ms)\n`);
+
 (async () => {
     const spreadsheetFilename = process.argv[2];
-    if (!spreadsheetFilename)
-        throw new Error("Usage: node ./main.js input-file-name.[xlsx|csv]");
-    process.stdout.write("Reading...");
+    const outFilename = process.argv[3];
+    if (!spreadsheetFilename || !outFilename)
+        throw new Error("Usage: node ./main.js input-file-name.[xlsx|csv] output-filename.xlsx");
+    begin("Reading...");
 
-    let tStart = performance.now();
-    const getMsTime = () => (-tStart + (tStart = performance.now())).toFixed(3)
 
     const { students, topics } = await readFromFile(spreadsheetFilename);
-    process.stdout.write(` DONE (${getMsTime()} ms)\nAssigning...`);
+    begin(`Assigning...`);
 
     const assignments = assignStudentsToGroups(students, topics, times);
-    process.stdout.write(` DONE (${getMsTime()} ms)\nChecking...`);
+    done();
+    begin(`Checking...`);
     checkStudentAssignmentTopics(assignments.studentAssignments);
 
     const reportParams = [assignments, parameters] as const;
 
-    process.stdout.write(` DONE (${getMsTime()} ms)\nBuilding reports...`);
+    done();
+    begin(`Building reports...`);
     const sheets: output.SheetTuples = [
         ["Group Index", reports.groupIndex(...reportParams)],
         ...reports
@@ -45,8 +52,11 @@ if (!global.performance) { global.performance = Date as any }
         ["Wristbands", reports.studentWristbands(...reportParams)],
         ["Topic Breakdown", reports.topicBreakdown(...reportParams)],
     ];
-    process.stdout.write(` DONE (${getMsTime()} ms)\nSaving Excel file...`);
-    output.writeXlsx("Discussion Groups Sorted.xlsx", sheets);
-    process.stdout.write(` DONE (${getMsTime()} ms)\n`);
+
+    done();
+    begin(`Saving Excel file...`);
+    output.writeXlsx(outFilename, sheets);
+    done();
+
     console.log("Overview: ", reports.overview(...reportParams));
 })().then(_.noop, (err) => console.error(err));

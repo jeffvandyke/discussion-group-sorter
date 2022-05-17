@@ -182,8 +182,6 @@ export function topicBreakdown(
     ];
 }
 
-const SEPARATE_GROUPS_BY_TIME = false;
-
 export function groupIndex(
     assignments: Assignments,
     params: Params
@@ -239,26 +237,25 @@ export function groupIndex(
         ...overviewTable,
         [],
         [],
-        ...(SEPARATE_GROUPS_BY_TIME
-            ? timeSections
-                  .map((ts) => [
-                      [`Groups for ${ts.time}`],
-                      [],
-                      groupsHeader,
-                      ...ts.groups,
-                      [],
-                      [],
-                  ])
-                  .flat()
-            : [
-                  ["Groups in topic order"],
-                  [],
-                  [groupsHeader[0], "Time", ...groupsHeader.slice(1)],
-                  ..._.zip(
-                      ...timeSections.map(({ time, groups }) =>
-                          groups.map((g) => [g[0], time, ...g.slice(1)])
-                      )
-                  ).flat(),
-              ]),
+            ["Group Schedule"],
+            [],
+            ..._.zip(...timeSections
+                .map((ts) => [
+                    [`Groups for ${ts.time}`, '', '', ''],
+                    // ['', '', '', ''],
+                    ["Name", "Topic", "Size", ''],
+                    ...ts.groups.map(g => [...g.slice(0, 3), '']),
+                ]))
+                .map(rowColSet => rowColSet.flat()),
+            [],
+            [],
+            ["Groups in topic order"],
+            [],
+            [groupsHeader[0], "Time", ...groupsHeader.slice(1)],
+            ..._.zip(
+                ...timeSections.map(({ time, groups }) =>
+                                    groups.map((g) => [g[0], time, ...g.slice(1)])
+                                   )
+            ).flat(),
     ];
 }

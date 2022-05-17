@@ -5,7 +5,7 @@
   "scripts": {
     "start": "node -r @swc-node/register main.ts",
     "test": "jest",
-    "build": "rollup main.ts --file dist-main.js -p typescript -p commonjs --format cjs"
+    "build": "rollup main.ts --file main.js -p typescript -p commonjs --format cjs"
   },
   "author": "Jeff VanDyke",
   "license": "ISC",
