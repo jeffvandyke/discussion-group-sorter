@@ -1,5 +1,4 @@
 node_modules
-*.csv
 *.csv#
 *.xlsx
 main.js

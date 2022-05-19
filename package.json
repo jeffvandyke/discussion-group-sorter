@@ -5,6 +5,7 @@
   "scripts": {
     "start": "node -r @swc-node/register main.ts",
     "test": "jest",
+    "codegen": "node -r @swc-node/register scripts/generate-example.ts",
     "build": "rollup -c"
   },
   "author": "Jeff VanDyke",
