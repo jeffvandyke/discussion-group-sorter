@@ -62,6 +62,7 @@ export class GroupAssignment {
     private readonly _students: Student[] = [];
 
     readonly group: Group;
+
     get students() {
         return this._students;
     }

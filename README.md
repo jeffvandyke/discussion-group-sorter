@@ -6,26 +6,26 @@ Each group averages around 15-20 students, and since there are multiple groups p
 
 ## Prerequisites
 
-- Node.js / NPM
+- Node.js / PNPM (or NPM)
 
 ## Usage:
 
 ```
-$ npm install
-$ npm start <input-file>.xlsx <output-file>.xlsx
+$ pnpm install
+$ pnpm start <input-file>.xlsx <output-file>.xlsx
 ```
 
 To run based on sample input:
 
 ```
-$ npm run codegen
-$ npm start examples/sample-input.csv sample-output.xlsx
+$ pnpm codegen
+$ pnpm start examples/sample-input.csv sample-output.xlsx
 ```
 
 To build for lightweight running:
 
 ```
-$ npm run build
+$ pnpm build
 $ node main.js <input-file>.xlsx <output-file>.xlsx
 ```
 
@@ -45,5 +45,5 @@ An Excel file with the following sheets:
 
 - *Group Index:* Overview of groups per day and the breakdown of students within them (bottom section)
 - *Tues/Wed/Thurs Groups:* Groups by letter and topic with list of students in each group.
-- *Wristbands:* All students with what their group schedule in letters, e.g.: [ Adams | Sam | W, O, X ]
+- *Wristbands:* All students with what their group schedule in letters, e.g.: [ Adams | Sam | D, G, B ]
 - *Topic Breakdown:* Overview of how many students chose which topics by gender and grade.

@@ -2,6 +2,7 @@ import { Group, makeGroup } from "./group";
 import { Time } from "./types";
 
 function groupCountFromTotal(n: number): number {
+    // TODO: parameterize ideal group size
     return Math.round((n + 10) / 17.5);
 }
 

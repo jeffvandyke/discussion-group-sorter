@@ -25,12 +25,7 @@ class GroupAssignmentsTracker {
 
     private originalOrder: string[];
 
-    // Maintain sorted with fewest assignees first
     private groupAssignments: GroupAssignment[];
-
-    // private sortCounts() {
-    //     this.groupAssignments.sort((a, b) => a.numAssigned - b.numAssigned);
-    // }
 
     getGroupAssignments() {
         return this.originalOrder.map((id) =>
@@ -48,15 +43,14 @@ class GroupAssignmentsTracker {
         // Try to pick a group that prioritizes even
         // distribution as well as populating groups,
         // some improvements could still be made
-        const groupAssignment = _.sortBy(
+        const groupAssignment = _.maxBy(
             eligibleAssignments,
             (asmt) =>
                 100 * asmt.numAssigned +
                 80 * asmt.getGradeCount(student.grade) +
                 80 * asmt.getGenderCount(student.gender)
-        )[0];
+        );
         groupAssignment.addStudent(student);
-        // this.sortCounts();
         return groupAssignment.group;
     }
 }
@@ -113,7 +107,7 @@ export function assignStudentsToGroups(
             topicGroups
         );
 
-        // TODO: start with who has the least times available
+        // TODO: possible improvement: start with who has the least times available
         studentsToAssign.forEach((assignment) => {
             const timesAvailable = assignment.getUnassignedTimes();
             const group = groupAssignmentsTracker.addStudentToGroup(
@@ -126,7 +120,7 @@ export function assignStudentsToGroups(
     });
 
     return {
-        studentAssignments: studentAssignments,
-        groupAssignments: groupAssignments,
+        studentAssignments,
+        groupAssignments,
     };
 }
