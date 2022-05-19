@@ -33,16 +33,16 @@ const done = () => process.stdout.write(` DONE (${getMsTime()} ms)\n`);
 
 
     const { students, topics } = await readFromFile(spreadsheetFilename);
-    begin(`Assigning...`);
+    done();
 
+    begin(`Assigning...`);
     const assignments = assignStudentsToGroups(students, topics, times);
     done();
     begin(`Checking...`);
     checkStudentAssignmentTopics(assignments.studentAssignments);
-
     const reportParams = [assignments, parameters] as const;
-
     done();
+
     begin(`Building reports...`);
     const sheets: output.SheetTuples = [
         ["Group Index", reports.groupIndex(...reportParams)],
