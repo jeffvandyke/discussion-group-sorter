@@ -16,34 +16,41 @@ const parameters = {
     grades,
 };
 
-if (!global.performance) { global.performance = Date as any }
+if (!global.performance) {
+    global.performance = Date as any;
+}
 
 let tStart = performance.now();
-const getMsTime = () => (-tStart + (tStart = performance.now())).toFixed(3)
+const getMsTime = () => (-tStart + (tStart = performance.now())).toFixed(3);
 
-const begin = (txt: string) => process.stdout.write(txt);
-const done = () => process.stdout.write(` DONE (${getMsTime()} ms)\n`);
+const begin = (txt: string) => process.stdout.write(`${txt}... `);
+const done = () => process.stdout.write(`DONE (${getMsTime()} ms)\n`);
 
 (async () => {
     const spreadsheetFilename = process.argv[2];
     const outFilename = process.argv[3];
     if (!spreadsheetFilename || !outFilename)
-        throw new Error("Usage: node ./main.js input-file-name.[xlsx|csv] output-filename.xlsx");
-    begin("Reading...");
+        throw new Error(
+            "Usage: node ./main.js input-file-name.[xlsx|csv] output-filename.xlsx"
+        );
+    begin("Reading");
 
-
-    const { students, topics } = await readFromFile(spreadsheetFilename);
+    const { students, topics } = await readFromFile(
+        spreadsheetFilename,
+        times.length
+    );
     done();
 
-    begin(`Assigning...`);
+    begin(`Assigning`);
     const assignments = assignStudentsToGroups(students, topics, times);
     done();
-    begin(`Checking...`);
+
+    begin(`Checking`);
     checkStudentAssignmentTopics(assignments.studentAssignments);
     const reportParams = [assignments, parameters] as const;
     done();
 
-    begin(`Building reports...`);
+    begin(`Building reports`);
     const sheets: output.SheetTuples = [
         ["Group Index", reports.groupIndex(...reportParams)],
         ...reports
@@ -54,7 +61,7 @@ const done = () => process.stdout.write(` DONE (${getMsTime()} ms)\n`);
     ];
 
     done();
-    begin(`Saving Excel file...`);
+    begin(`Saving Excel file`);
     output.writeXlsx(outFilename, sheets);
     done();
 
