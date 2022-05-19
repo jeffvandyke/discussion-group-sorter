@@ -9,6 +9,7 @@ describe("StudentAssignment", () => {
         firstName: faker.name.firstName(),
         gender: "Male",
         grade: "10",
+        church: "Zion PRC",
         chosenTopics: ["Apples", "Bananas", "Cherry"],
     });
 

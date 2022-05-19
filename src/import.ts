@@ -1,3 +1,4 @@
+import * as _ from "lodash";
 import * as fs from "fs/promises";
 import { parse } from "csv-parse/sync";
 import * as Xlsx from "xlsx";
@@ -22,7 +23,10 @@ function readXlsx(filename: string) {
     return parseCsv(sheetCsv);
 }
 
-export async function readFromFile(filename: string): Promise<{
+export async function readFromFile(
+    filename: string,
+    totalTimes: number
+): Promise<{
     students: Student[];
     topics: Topic[];
 }> {
@@ -35,13 +39,42 @@ export async function readFromFile(filename: string): Promise<{
             firstName: row[1],
             gender: row[2],
             grade: row[3],
-            chosenTopics: [row[4], row[5], row[6]],
+            church: row[4],
+            chosenTopics: row[5].split("|").slice(0, 3),
         })
     );
 
     const topics = [
-        ...new Set(records.flatMap((row) => [row[4], row[5], row[6]])),
+        ...new Set(students.flatMap((student) => student.chosenTopics)),
     ];
+
+    const invalidTopicStudents = students.filter(
+        (s) => s.chosenTopics.length !== totalTimes
+    );
+    if (invalidTopicStudents.length > 0) {
+        // Choose most popular topics
+        const topicsByPopularity = _.orderBy(
+            topics.map((topic) => ({
+                topic,
+                count: students.filter((s) => s.chosenTopics.includes(topic))
+                    .length,
+            })),
+            "count",
+            "desc"
+        );
+
+        invalidTopicStudents.forEach((s) => {
+            while (s.chosenTopics.length < totalTimes) {
+                const mostPopularNewTopic = topicsByPopularity.filter(
+                    (p) => !s.chosenTopics.includes(p.topic)
+                )[0].topic;
+                console.warn(
+                    `Student ${s.firstName} ${s.lastName} has too few topics, adding topic "${mostPopularNewTopic}"`
+                );
+                (s.chosenTopics as string[]).push(mostPopularNewTopic);
+            }
+        });
+    }
 
     return {
         students,

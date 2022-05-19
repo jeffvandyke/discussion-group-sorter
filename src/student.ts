@@ -23,6 +23,7 @@ export type Student = {
     readonly suffix?: string;
     readonly gender: Gender;
     readonly grade: Grade;
+    readonly church: string;
     /** 3 for this problem */
     readonly chosenTopics: ReadonlyArray<Topic>;
 };

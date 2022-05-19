@@ -75,7 +75,7 @@ function sortStudents<T extends { lastName: string; firstName: string }>(
 ): T[] {
     return _.orderBy(students, [
         (s) => s.lastName.toLowerCase().replace(" ", ""),
-        "lastName",
+        // "lastName",
         "firstName",
     ]);
 }
@@ -88,12 +88,13 @@ export function studentWristbands(
         studentAssignments.map((sa) => ({
             lastName: sa.student.lastName,
             firstName: sa.student.firstName,
+            church: sa.student.church,
             schedule: times.map((t) => sa.assignments[t].groupName).join(", "),
         }))
     );
     return [
-        ["Last Name", "First Name", "Wristband Schedule"],
-        ...data.map((v) => [v.lastName, v.firstName, v.schedule]),
+        ["Last Name", "First Name", "Church", "Wristband Schedule"],
+        ...data.map((v) => [v.lastName, v.firstName, v.church, v.schedule]),
     ];
 }
 
@@ -114,6 +115,7 @@ export function groupBreakdowns(
                         studentStats: breakdownStudentStats(g.students, grades),
                         students: sortStudents(g.students).map((s) => ({
                             name: displayStudentLastFirst(s),
+                            church: s.church,
                             traits: displayStudentTraits(s),
                         })),
                     })),
@@ -144,7 +146,7 @@ export function programSheets(
                             (gd, i) => `${gd}: ${g.studentStats.gradeTotals[i]}`
                         ),
                     ],
-                    ...g.students.map((s) => [s.name, "", "", s.traits]),
+                    ...g.students.map((s) => [s.name, "", s.church, s.traits]),
                     [],
                 ])
                 .flat(),

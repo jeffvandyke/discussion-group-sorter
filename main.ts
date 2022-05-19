@@ -60,6 +60,21 @@ const done = () => process.stdout.write(`DONE (${getMsTime()} ms)\n`);
         ["Topic Breakdown", reports.topicBreakdown(...reportParams)],
     ];
 
+    // // Check duplicate students
+    //
+    // const wristbands = reports.studentWristbands(...reportParams);
+    // console.log(
+    //     JSON.stringify(
+    //         Object.entries(
+    //             _.groupBy(wristbands, (s) =>
+    //                 (s[0] + s[1]).toLowerCase().replace(" ", "")
+    //             )
+    //         ).filter(([k, v]) => v.length > 1),
+    //         null,
+    //         2
+    //     )
+    // );
+
     done();
     begin(`Saving Excel file`);
     output.writeXlsx(outFilename, sheets);
