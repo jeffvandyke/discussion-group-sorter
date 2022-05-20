@@ -1,8 +1,8 @@
 # Discussion Group Sorter
 
-This program was written to sort students into discussion groups for the 2022 Protestant Reformed Young People's Convention. It takes a list of around 500 students, each with their gender, grade, and their 3 choices of 12 available discussion group topics that they chose to be a part of on a survey, and sorts them into around 30 groups per day (where each day has one scheduled discussion group time), leading to a total of around 90 groups over all 3 days.
+This program was written to sort students into discussion groups for the 2022 Protestant Reformed Young People's Convention. It takes a list of around 500 students, each with their gender, grade, and their 3 choices of 12 available discussion group topics, and sorts them into around 30 groups per day (where each day has one scheduled discussion group time), leading to a total of around 90 groups over all 3 days.
 
-Each group averages around 15-20 students, and since there are multiple groups per topic, groups within a topic have an even distribution between gender and grade to help with having a balanced discussion. The topics are balanced between days as well, so that there is as much potential for discussion group leaders to stick with the same topic from one time slot to the next.
+Each group averages around 15-20 students, and since there are multiple groups per topic, groups within a topic have an even distribution between gender and grade to help with having a balanced discussion. The topics are balanced between days as well, so that group leaders have maximum opportunity to focus on the same topic from one day to the next.
 
 ## Prerequisites
 
