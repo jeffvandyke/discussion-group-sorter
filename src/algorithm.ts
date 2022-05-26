@@ -35,7 +35,6 @@ class GroupAssignmentsTracker {
 
     /** Assigns group within the times allowed to assign to */
     addStudentToGroup(student: Student, candidates: Time[]) {
-        // Use first match - list is sorted
         const eligibleAssignments = this.groupAssignments.filter((g) =>
             candidates.includes(g.group.time)
         );
@@ -43,7 +42,7 @@ class GroupAssignmentsTracker {
         // Try to pick a group that prioritizes even
         // distribution as well as populating groups,
         // some improvements could still be made
-        const groupAssignment = _.maxBy(
+        const groupAssignment = _.minBy(
             eligibleAssignments,
             (asmt) =>
                 100 * asmt.numAssigned +
@@ -107,12 +106,29 @@ export function assignStudentsToGroups(
             topicGroups
         );
 
-        // TODO: possible improvement: start with who has the least times available
-        studentsToAssign.forEach((assignment) => {
-            const timesAvailable = assignment.getUnassignedTimes();
+        // TODO: find better matching of student available times to groups available
+        const sortedTopicAssignments = _.orderBy(
+            studentsToAssign.map((assignment) => ({
+                assignment,
+                unassignedTimes: assignment.getUnassignedTimes(),
+            })),
+            ({ unassignedTimes }) => unassignedTimes.length
+        );
+
+        // DEBUG code
+        // console.log(
+        //     "Topic: ",
+        //     topic,
+        //     ", Times breakdown: ",
+        //     _.mapValues(_.groupBy(sortedTopicAssignments, ({ unassignedTimes }) =>
+        //         _.sortBy(unassignedTimes, _.identity).join("|")
+        //     )
+        // , v => v.length));
+
+        sortedTopicAssignments.forEach(({ assignment, unassignedTimes }) => {
             const group = groupAssignmentsTracker.addStudentToGroup(
                 assignment.student,
-                timesAvailable
+                unassignedTimes
             );
             assignment.assignGroup(group);
         });
